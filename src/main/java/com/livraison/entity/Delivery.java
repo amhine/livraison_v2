@@ -31,4 +31,10 @@ public class Delivery {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Tour tour;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Customer customer;
 }
