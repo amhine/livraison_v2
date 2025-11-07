@@ -1,14 +1,17 @@
 package com.livraison.service;
 
 import com.livraison.dto.TourDTO;
+import com.livraison.dto.OptimizeTourRequest;
 import com.livraison.entity.*;
+import com.livraison.entity.enums.TourStatus;
+import com.livraison.entity.enums.OptimizerType;
 import com.livraison.mapper.TourMapper;
 import com.livraison.optimizer.TourOptimizer;
 import com.livraison.repository.*;
 import com.livraison.util.DistanceCalculator;
-import com.livraison.entity.enums.OptimizerType;
-import com.livraison.dto.OptimizeTourRequest;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,6 +22,7 @@ public class TourServiceImpl implements TourService {
     private final VehicleRepository vehicleRepository;
     private final WarehouseRepository warehouseRepository;
     private final DeliveryRepository deliveryRepository;
+    private final DeliveryHistoryRepository deliveryHistoryRepository;
     private final TourMapper tourMapper;
 
     public TourServiceImpl(TourRepository tourRepository,
@@ -30,8 +34,10 @@ public class TourServiceImpl implements TourService {
         this.vehicleRepository = vehicleRepository;
         this.warehouseRepository = warehouseRepository;
         this.deliveryRepository = deliveryRepository;
+        this.deliveryHistoryRepository = deliveryHistoryRepository; // correct type
         this.tourMapper = tourMapper;
     }
+
 
     @Override
     public List<TourDTO> findAll() {
@@ -78,11 +84,39 @@ public class TourServiceImpl implements TourService {
         tourRepository.deleteById(id);
     }
 
+    @Override
+    public TourDTO updateStatus(Long id, TourStatus status) {
+        Optional<Tour> opt = tourRepository.findById(id);
+        if (opt.isEmpty()) return null;
 
+        Tour tour = opt.get();
+        tour.setStatus(status);
 
-    public double getTotalDistanceAfterOptimization(Long id, TourOptimizer optimizer) {
-        TourDTO optimized = optimizeTour(id, optimizer);
-        return optimized.getDistanceTotale();
+        // Enregistrer un historique lorsque la tournée est terminée
+        if (status == TourStatus.COMPLETED) {
+            LocalDate deliveryDate = tour.getDate();
+            DayOfWeek dow = deliveryDate != null ? deliveryDate.getDayOfWeek() : null;
+            List<Delivery> deliveries = tour.getDeliveries();
+
+            if (deliveries != null) {
+                for (Delivery d : deliveries) {
+                    DeliveryHistory h = DeliveryHistory.builder()
+                            .customer(d.getCustomer())
+                            .delivery(d)
+                            .tour(tour)
+                            .deliveryDate(deliveryDate)
+                            .plannedTime(null)
+                            .actualTime(null)
+                            .delay(null)
+                            .dayOfWeek(dow != null ? dow.name() : null)
+                            .build();
+                    deliveryHistoryRepository.save(h);
+                }
+            }
+        }
+
+        Tour saved = tourRepository.save(tour);
+        return tourMapper.toDTO(saved);
     }
 
     @Override
@@ -104,14 +138,10 @@ public class TourServiceImpl implements TourService {
         }
 
         List<Delivery> ordered = optimizer.optimize(warehouse, deliveries);
+        ordered.forEach(d -> d.setTour(tour));
 
-        for (Delivery d : ordered) {
-            d.setTour(tour);
-        }
         tour.setDeliveries(ordered);
-
-        double total = computeTotalDistance(warehouse, ordered);
-        tour.setDistanceTotale(total);
+        tour.setDistanceTotale(computeTotalDistance(warehouse, ordered));
         tour.setOptimizerUsed(resolveOptimizerType(optimizer));
 
         Tour saved = tourRepository.save(tour);
@@ -121,15 +151,13 @@ public class TourServiceImpl implements TourService {
     @Override
     public double getTotalDistance(Long tourId) {
         Optional<Tour> optTour = tourRepository.findById(tourId);
-        if (optTour.isEmpty()) {
-            return 0D;
-        }
+        if (optTour.isEmpty()) return 0D;
+
         Tour tour = optTour.get();
         Warehouses warehouse = tour.getWarehouses();
         List<Delivery> ordered = tour.getDeliveries();
-        if (warehouse == null || ordered == null || ordered.isEmpty()) {
-            return 0D;
-        }
+
+        if (warehouse == null || ordered == null || ordered.isEmpty()) return 0D;
         return computeTotalDistance(warehouse, ordered);
     }
 
@@ -149,18 +177,15 @@ public class TourServiceImpl implements TourService {
 
         if (warehouse != null && deliveries != null && !deliveries.isEmpty()) {
             List<Delivery> ordered = optimizer.optimize(warehouse, deliveries);
-            for (Delivery d : ordered) {
-                d.setTour(toCreate);
-            }
+            ordered.forEach(d -> d.setTour(toCreate));
+
             toCreate.setDeliveries(ordered);
-            double total = computeTotalDistance(warehouse, ordered);
-            toCreate.setDistanceTotale(total);
-            toCreate.setOptimizerUsed(resolveOptimizerType(optimizer));
+            toCreate.setDistanceTotale(computeTotalDistance(warehouse, ordered));
         } else {
             toCreate.setDistanceTotale(0D);
-            toCreate.setOptimizerUsed(resolveOptimizerType(optimizer));
         }
 
+        toCreate.setOptimizerUsed(resolveOptimizerType(optimizer));
         Tour saved = tourRepository.save(toCreate);
         return tourMapper.toDTO(saved);
     }
@@ -174,9 +199,7 @@ public class TourServiceImpl implements TourService {
 
     private double computeTotalDistance(Warehouses warehouse, List<Delivery> sequence) {
         double total = 0D;
-        if (sequence == null || sequence.isEmpty() || warehouse == null) {
-            return total;
-        }
+        if (sequence == null || sequence.isEmpty() || warehouse == null) return total;
 
         Delivery first = sequence.get(0);
         total += DistanceCalculator.calculateDistance(
@@ -200,6 +223,23 @@ public class TourServiceImpl implements TourService {
         );
 
         return total;
+    }
+    @Override
+    public double getTotalDistanceAfterOptimization(Long tourId, TourOptimizer optimizer) {
+        Optional<Tour> optTour = tourRepository.findById(tourId);
+        if (optTour.isEmpty()) return 0D;
+
+        Tour tour = optTour.get();
+        Warehouses warehouse = tour.getWarehouses();
+        List<Delivery> deliveries = tour.getDeliveries();
+
+        if (warehouse == null || deliveries == null || deliveries.isEmpty()) return 0D;
+
+        // Optimisation de la tournée
+        List<Delivery> optimizedDeliveries = optimizer.optimize(warehouse, deliveries);
+
+        // Calcul de la distance totale après optimisation
+        return computeTotalDistance(warehouse, optimizedDeliveries);
     }
 
 }

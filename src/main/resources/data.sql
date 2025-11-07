@@ -21,3 +21,11 @@ INSERT INTO delivery (name_client, address, latitude, longitude, poids, volume, 
   ('Carla Leroy', '3 Rue Victor Hugo, Paris', 48.8530, 2.3499, 15.0, 0.10, 'livree', 1, 2),
   ('Denis Morel', '20 Rue de la Republique, Lyon', 45.7630, 4.8350, 3.0, 0.03, 'en_attente', 2, 0),
   ('Emma Blanc', '8 Quai Saint-Antoine, Lyon', 45.7645, 4.8350, 1.2, 0.01, 'en_cours', 2, 1);
+-- Customers
+INSERT INTO customer (name, address, latitude, longitude, preferred_time_slot)
+VALUES
+    ('Alice Martin', '12 Rue des Fleurs, Paris', 48.8606, 2.3376, '09:00-11:00'),
+    ('Bob Dupont', '5 Boulevard Voltaire, Paris', 48.8570, 2.3709, '14:00-16:00'),
+    ('Carla Leroy', '3 Rue Victor Hugo, Paris', 48.8530, 2.3499, '10:00-12:00'),
+    ('Denis Morel', '20 Rue de la Republique, Lyon', 45.7630, 4.8350, '13:00-15:00'),
+    ('Emma Blanc', '8 Quai Saint-Antoine, Lyon', 45.7645, 4.8350, '16:00-18:00');

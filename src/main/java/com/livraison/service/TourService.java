@@ -2,6 +2,7 @@ package com.livraison.service;
 
 import com.livraison.dto.TourDTO;
 import com.livraison.dto.OptimizeTourRequest;
+import com.livraison.entity.enums.TourStatus;
 import com.livraison.optimizer.TourOptimizer;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface TourService {
     double getTotalDistanceAfterOptimization(Long id, TourOptimizer optimizer);
 
     TourDTO createAndOptimize(OptimizeTourRequest req, TourOptimizer optimizer);
+
+    TourDTO updateStatus(Long id, TourStatus status);
 }

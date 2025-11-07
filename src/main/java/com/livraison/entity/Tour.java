@@ -1,5 +1,6 @@
 package com.livraison.entity;
 
+import com.livraison.entity.enums.TourStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -23,6 +24,9 @@ public class Tour {
 
     @Enumerated(EnumType.STRING)
     private OptimizerType optimizerUsed;
+
+    @Enumerated(EnumType.STRING)
+    private TourStatus status;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
