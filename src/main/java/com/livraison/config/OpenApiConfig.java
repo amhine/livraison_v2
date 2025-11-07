@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @OpenAPIDefinition(
     info = @Info(
         title = "Livraison API",
-        version = "v1",
+        version = "v2",
         description = "Documentation OpenAPI pour les endpoints de l'application Livraison",
         contact = @Contact(name = "Equipe Livraison", email = "support@example.com"),
         license = @License(name = "Apache 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0")
