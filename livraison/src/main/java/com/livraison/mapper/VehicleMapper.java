@@ -4,6 +4,7 @@ import com.livraison.dto.VehicleDTO;
 import com.livraison.entity.Vehicle;
 import org.springframework.stereotype.Component;
 
+@Component
 public class VehicleMapper {
 
     public VehicleDTO toDTO(Vehicle vehicle) {
@@ -11,9 +12,9 @@ public class VehicleMapper {
         return VehicleDTO.builder()
                 .id(vehicle.getId())
                 .type(vehicle.getType())
-                .capacitePoids(vehicle.getCapacitePoids())
-                .capaciteVolume(vehicle.getCapaciteVolume())
-                .livraisonsMax(vehicle.getLivraisonsMax())
+                .capacitePoids(vehicle.getMaxWeightKg())
+                .capaciteVolume(vehicle.getMaxVolumeM3())
+                .livraisonsMax(vehicle.getMaxDeliveries())
                 .build();
     }
 
@@ -22,9 +23,9 @@ public class VehicleMapper {
         return Vehicle.builder()
                 .id(dto.getId())
                 .type(dto.getType())
-                .capacitePoids(dto.getCapacitePoids())
-                .capaciteVolume(dto.getCapaciteVolume())
-                .livraisonsMax(dto.getLivraisonsMax())
+                .maxWeightKg(dto.getCapacitePoids())
+                .maxVolumeM3(dto.getCapaciteVolume())
+                .maxDeliveries(dto.getLivraisonsMax())
                 .build();
     }
 }

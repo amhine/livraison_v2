@@ -8,11 +8,14 @@ import com.livraison.repository.*;
 import com.livraison.util.DistanceCalculator;
 import com.livraison.entity.enums.OptimizerType;
 import com.livraison.dto.OptimizeTourRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@Service
+@RequiredArgsConstructor
 public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
@@ -21,17 +24,7 @@ public class TourServiceImpl implements TourService {
     private final DeliveryRepository deliveryRepository;
     private final TourMapper tourMapper;
 
-    public TourServiceImpl(TourRepository tourRepository,
-                           VehicleRepository vehicleRepository,
-                           WarehouseRepository warehouseRepository,
-                           DeliveryRepository deliveryRepository,
-                           TourMapper tourMapper) {
-        this.tourRepository = tourRepository;
-        this.vehicleRepository = vehicleRepository;
-        this.warehouseRepository = warehouseRepository;
-        this.deliveryRepository = deliveryRepository;
-        this.tourMapper = tourMapper;
-    }
+
 
     @Override
     public List<TourDTO> findAll() {

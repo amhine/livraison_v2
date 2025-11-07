@@ -32,7 +32,7 @@ class DeliveryServiceImplTest {
                 DeliveryDTO dto = new DeliveryDTO();
                 if (d == null) return null;
                 dto.setId(d.getId());
-                dto.setNameClient(d.getNameClient());
+                dto.setNameClient(d.getName());
                 dto.setAddress(d.getAddress());
                 dto.setLatitude(d.getLatitude());
                 dto.setLongitude(d.getLongitude());
@@ -46,7 +46,7 @@ class DeliveryServiceImplTest {
                 if (dto == null) return null;
                 Customer d = new Customer();
                 d.setId(dto.getId());
-                d.setNameClient(dto.getNameClient());
+                d.setName(dto.getNameClient());
                 d.setAddress(dto.getAddress());
                 d.setLatitude(dto.getLatitude());
                 d.setLongitude(dto.getLongitude());

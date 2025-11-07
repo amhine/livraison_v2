@@ -3,7 +3,9 @@ package com.livraison.mapper;
 import com.livraison.dto.DeliveryDTO;
 import com.livraison.entity.Customer;
 import com.livraison.entity.Tour;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DeliveryMapper {
 
     public DeliveryDTO toDTO(Customer delivery) {
@@ -11,7 +13,7 @@ public class DeliveryMapper {
 
         return DeliveryDTO.builder()
                 .id(delivery.getId())
-                .nameClient(delivery.getNameClient())
+                .nameClient(delivery.getName())
                 .address(delivery.getAddress())
                 .latitude(delivery.getLatitude())
                 .longitude(delivery.getLongitude())
@@ -27,7 +29,7 @@ public class DeliveryMapper {
 
         Customer delivery = new Customer();
         delivery.setId(dto.getId());
-        delivery.setNameClient(dto.getNameClient());
+        delivery.setName(dto.getNameClient());
         delivery.setAddress(dto.getAddress());
         delivery.setLatitude(dto.getLatitude());
         delivery.setLongitude(dto.getLongitude());

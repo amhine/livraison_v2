@@ -6,11 +6,12 @@ import com.livraison.entity.enums.VehicleType;
 import com.livraison.mapper.VehicleMapper;
 import com.livraison.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Service
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
 
@@ -29,9 +30,9 @@ public class VehicleServiceImpl implements VehicleService {
                 .orElseThrow(() -> new RuntimeException("Véhicule non trouvé avec ID: " + id));
 
         existing.setType(dto.getType());
-        existing.setCapacitePoids(dto.getCapacitePoids());
-        existing.setCapaciteVolume(dto.getCapaciteVolume());
-        existing.setLivraisonsMax(dto.getLivraisonsMax());
+        existing.setMaxWeightKg(dto.getCapacitePoids());
+        existing.setMaxVolumeM3(dto.getCapaciteVolume());
+        existing.setMaxDeliveries(dto.getLivraisonsMax());
 
         return vehicleMapper.toDTO(vehicleRepository.save(existing));
     }

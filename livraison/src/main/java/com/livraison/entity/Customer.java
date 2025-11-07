@@ -1,9 +1,9 @@
 package com.livraison.entity;
 
 import com.livraison.entity.enums.DeliveryStatus;
-
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -24,7 +24,6 @@ public class Customer {
     private double volume;
     private String preferredTimeSlot;
 
-
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
 
@@ -34,7 +33,7 @@ public class Customer {
     @EqualsAndHashCode.Exclude
     private Tour tour;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Delivery> deliveries;

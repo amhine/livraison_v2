@@ -3,11 +3,12 @@ package com.livraison.optimizer;
 import com.livraison.entity.Customer;
 import com.livraison.entity.Warehouse;
 import com.livraison.util.DistanceCalculator;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
+@Component
 public class ClarkeWrightOptimizer implements TourOptimizer {
 
     @Override
