@@ -4,6 +4,7 @@ import com.livraison.dto.DeliveryDTO;
 import com.livraison.dto.StatusUpdateRequest;
 import com.livraison.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,9 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
-    @GetMapping
+
+
+    @GetMapping("")
     public ResponseEntity<List<DeliveryDTO>> getAllDeliveries() {
         return ResponseEntity.ok(deliveryService.getAllDeliveries());
     }
@@ -26,7 +29,7 @@ public class DeliveryController {
         return ResponseEntity.ok(deliveryService.getDeliveryById(id));
     }
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<DeliveryDTO> createDelivery(@RequestBody DeliveryDTO deliveryDTO) {
         return ResponseEntity.ok(deliveryService.createDelivery(deliveryDTO));
     }
