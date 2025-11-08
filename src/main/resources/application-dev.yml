@@ -1,13 +1,13 @@
 # ============================================
-# 🧩 Profil DEV - Base H2
+# 🧩 Profil DEV - Base H2 + Liquibase
 # ============================================
 
 spring:
   datasource:
-    url: ${DB_URL}
-    driver-class-name: ${DB_DRIVER}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:h2:mem:livraison;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
 
   h2:
     console:
@@ -16,20 +16,22 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update  # ← CHANGER DE 'validate' À 'create-drop'
-    defer-datasource-initialization: true
+      ddl-auto: none   # IMPORTANT: Liquibase gère le schema
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+    defer-datasource-initialization: false   # IMPORTANT pour éviter le circular dependency
 
   liquibase:
-    enabled: false
-
-  sql:
-    init:
-      mode: always
-      platform: h2
-
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    # facultatif selon besoin:
+    # contexts: dev
+    # default-schema: PUBLIC
+    # drop-first: false
+sql:
+  init:
+    mode: never
 server:
-  port: ${SERVER_PORT}
+  port: 8082
