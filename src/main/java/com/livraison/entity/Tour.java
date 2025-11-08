@@ -41,4 +41,5 @@ public class Tour {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Delivery> deliveries;
+
 }
