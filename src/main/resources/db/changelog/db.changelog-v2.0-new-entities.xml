@@ -41,4 +41,18 @@
         </rollback>
     </changeSet>
 
+    <!-- Ajouter colonne status sur tour (V2) -->
+    <changeSet id="2-tour-add-status" author="Nihad Amhine" context="v2.0">
+        <addColumn tableName="tour">
+            <column name="status" type="VARCHAR(30)"/>
+        </addColumn>
+        <createIndex tableName="tour" indexName="idx_tour_status">
+            <column name="status"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="tour" indexName="idx_tour_status"/>
+            <dropColumn tableName="tour" columnName="status"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
