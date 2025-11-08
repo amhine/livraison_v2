@@ -2,6 +2,9 @@ package com.livraison.mapper;
 
 import com.livraison.dto.CustomerDTO;
 import com.livraison.entity.Customer;
+import org.springframework.stereotype.Component;
+
+@Component
 
 public class CustomerMapper {
     public CustomerDTO toDto(Customer customer){

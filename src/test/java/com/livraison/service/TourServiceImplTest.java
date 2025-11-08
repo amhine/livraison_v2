@@ -5,6 +5,7 @@ import com.livraison.entity.*;
 import com.livraison.mapper.TourMapper;
 import com.livraison.optimizer.NearestNeighborOptimizer;
 import com.livraison.repository.DeliveryRepository;
+import com.livraison.repository.DeliveryHistoryRepository;
 import com.livraison.repository.TourRepository;
 import com.livraison.repository.VehicleRepository;
 import com.livraison.repository.WarehouseRepository;
@@ -25,6 +26,7 @@ class TourServiceImplTest {
     private VehicleRepository vehicleRepository;
     private WarehouseRepository warehouseRepository;
     private DeliveryRepository deliveryRepository;
+    private DeliveryHistoryRepository deliveryHistoryRepository;
     private TourMapper tourMapper;
 
     private TourServiceImpl service;
@@ -35,8 +37,18 @@ class TourServiceImplTest {
         vehicleRepository = mock(VehicleRepository.class);
         warehouseRepository = mock(WarehouseRepository.class);
         deliveryRepository = mock(DeliveryRepository.class);
+        deliveryHistoryRepository = mock(DeliveryHistoryRepository.class);
         tourMapper = new TourMapper();
-        service = new TourServiceImpl(tourRepository, vehicleRepository, warehouseRepository, deliveryRepository, tourMapper);
+
+        // ✅ Correction : ajout du DeliveryHistoryRepository dans le constructeur
+        service = new TourServiceImpl(
+                tourRepository,
+                vehicleRepository,
+                warehouseRepository,
+                deliveryRepository,
+                deliveryHistoryRepository,
+                tourMapper
+        );
     }
 
     @Test

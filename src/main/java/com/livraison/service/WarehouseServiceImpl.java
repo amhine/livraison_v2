@@ -4,19 +4,19 @@ import com.livraison.dto.WarehouseDTO;
 import com.livraison.entity.Warehouses;
 import com.livraison.mapper.WarehouseMapper;
 import com.livraison.repository.WarehouseRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
+@Service
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
     private final WarehouseMapper warehouseMapper;
 
-    public WarehouseServiceImpl(WarehouseRepository warehouseRepository, WarehouseMapper warehouseMapper) {
-        this.warehouseRepository = warehouseRepository;
-        this.warehouseMapper = warehouseMapper;
-    }
+
 
     @Override
     public WarehouseDTO createWarehouse(WarehouseDTO dto) {

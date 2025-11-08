@@ -42,4 +42,5 @@ public class Tour {
     @EqualsAndHashCode.Exclude
     private List<Delivery> deliveries;
 
+
 }
