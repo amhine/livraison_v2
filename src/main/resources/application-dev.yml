@@ -16,7 +16,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     defer-datasource-initialization: true
     show-sql: true
     properties:
@@ -25,11 +25,11 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
 
   liquibase:
-    enabled: false   # ❌ Désactivation pour dev
+    enabled: false
 
   sql:
     init:
-      mode: always
+      mode: never
 
 server:
   port: ${SERVER_PORT}

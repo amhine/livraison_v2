@@ -3,7 +3,9 @@ package com.livraison.mapper;
 import com.livraison.dto.DeliveryDTO;
 import com.livraison.entity.Delivery;
 import com.livraison.entity.Tour;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DeliveryMapper {
 
     public DeliveryDTO toDTO(Delivery delivery) {

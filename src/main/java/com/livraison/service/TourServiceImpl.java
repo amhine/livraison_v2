@@ -6,15 +6,21 @@ import com.livraison.entity.*;
 import com.livraison.entity.enums.TourStatus;
 import com.livraison.entity.enums.OptimizerType;
 import com.livraison.mapper.TourMapper;
+import com.livraison.optimizer.NearestNeighborOptimizer;
 import com.livraison.optimizer.TourOptimizer;
 import com.livraison.repository.*;
 import com.livraison.util.DistanceCalculator;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+@Service
+@RequiredArgsConstructor
 
 public class TourServiceImpl implements TourService {
 
@@ -22,21 +28,11 @@ public class TourServiceImpl implements TourService {
     private final VehicleRepository vehicleRepository;
     private final WarehouseRepository warehouseRepository;
     private final DeliveryRepository deliveryRepository;
-    private final DeliveryHistoryRepository deliveryHistoryRepository;
+    private final DeliveryHistoryRepository deliveryHistoryRepository ;
     private final TourMapper tourMapper;
 
-    public TourServiceImpl(TourRepository tourRepository,
-                           VehicleRepository vehicleRepository,
-                           WarehouseRepository warehouseRepository,
-                           DeliveryRepository deliveryRepository,
-                           TourMapper tourMapper) {
-        this.tourRepository = tourRepository;
-        this.vehicleRepository = vehicleRepository;
-        this.warehouseRepository = warehouseRepository;
-        this.deliveryRepository = deliveryRepository;
-        this.deliveryHistoryRepository = deliveryHistoryRepository; // correct type
-        this.tourMapper = tourMapper;
-    }
+
+
 
 
     @Override
@@ -166,7 +162,7 @@ public class TourServiceImpl implements TourService {
         Vehicle vehicle = vehicleRepository.findById(req.getVehicleId()).orElse(null);
         Warehouses warehouse = warehouseRepository.findById(req.getWarehouseId()).orElse(null);
         List<Delivery> deliveries = req.getDeliveryIds() != null ?
-                deliveryRepository.findAllById(req.getDeliveryIds()) : java.util.Collections.emptyList();
+                deliveryRepository.findAllById(req.getDeliveryIds()) : Collections.emptyList();
 
         Tour toCreate = Tour.builder()
                 .date(req.getDate())
@@ -191,7 +187,7 @@ public class TourServiceImpl implements TourService {
     }
 
     private OptimizerType resolveOptimizerType(TourOptimizer optimizer) {
-        if (optimizer instanceof com.livraison.optimizer.NearestNeighborOptimizer) {
+        if (optimizer instanceof NearestNeighborOptimizer) {
             return OptimizerType.plus_proche_voisin;
         }
         return OptimizerType.clarke_et_wright;

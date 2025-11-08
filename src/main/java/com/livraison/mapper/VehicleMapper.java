@@ -2,8 +2,9 @@ package com.livraison.mapper;
 
 import com.livraison.dto.VehicleDTO;
 import com.livraison.entity.Vehicle;
+import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
-
+@Component
 public class VehicleMapper {
 
     public VehicleDTO toDTO(Vehicle vehicle) {

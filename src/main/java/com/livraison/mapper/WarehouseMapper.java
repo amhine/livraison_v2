@@ -2,7 +2,10 @@ package com.livraison.mapper;
 
 import com.livraison.dto.WarehouseDTO;
 import com.livraison.entity.Warehouses;
+import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class WarehouseMapper {
 
     public WarehouseDTO toDTO(Warehouses warehouse) {

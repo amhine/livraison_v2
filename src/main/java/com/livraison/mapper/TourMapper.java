@@ -2,9 +2,11 @@ package com.livraison.mapper;
 
 import com.livraison.dto.TourDTO;
 import com.livraison.entity.*;
+import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
-
+@Component
 public class TourMapper {
 
     public TourDTO toDTO(Tour tour) {
