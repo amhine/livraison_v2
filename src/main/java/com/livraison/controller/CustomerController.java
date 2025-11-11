@@ -1,12 +1,15 @@
 package com.livraison.controller;
 
 import com.livraison.entity.Customer;
+import com.livraison.dto.CustomerDTO;
+import com.livraison.mapper.CustomerMapper;
 import com.livraison.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -14,20 +17,21 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final CustomerMapper customerMapper;
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
-        Customer savedCustomer = customerService.saveCustomer(customer);
-        return ResponseEntity.ok(savedCustomer);
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO customer) {
+        Customer savedCustomer = customerService.saveCustomer(customerMapper.toEntity(customer));
+        return ResponseEntity.ok(customerMapper.toDto(savedCustomer));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(
+    public ResponseEntity<CustomerDTO> updateCustomer(
             @PathVariable Long id,
-            @RequestBody Customer customer
+            @RequestBody CustomerDTO customer
     ) {
-        Customer updatedCustomer = customerService.updateCustomer(id, customer);
-        return ResponseEntity.ok(updatedCustomer);
+        Customer updatedCustomer = customerService.updateCustomer(id, customerMapper.toEntity(customer));
+        return ResponseEntity.ok(customerMapper.toDto(updatedCustomer));
     }
 
     @DeleteMapping("/{id}")
@@ -37,29 +41,42 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
         return customerService.getCustomerById(id)
+                .map(customerMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers() {
-        return ResponseEntity.ok(customerService.getAllCustomers());
+    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
+        List<CustomerDTO> list = customerService.getAllCustomers().stream()
+                .map(customerMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/search/name")
-    public ResponseEntity<List<Customer>> searchByName(@RequestParam String name) {
-        return ResponseEntity.ok(customerService.searchByName(name));
+    public ResponseEntity<List<CustomerDTO>> searchByName(@RequestParam String name) {
+        List<CustomerDTO> list = customerService.searchByName(name).stream()
+                .map(customerMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/search/address")
-    public ResponseEntity<List<Customer>> searchByAddress(@RequestParam String address) {
-        return ResponseEntity.ok(customerService.searchByAddress(address));
+    public ResponseEntity<List<CustomerDTO>> searchByAddress(@RequestParam String address) {
+        List<CustomerDTO> list = customerService.searchByAddress(address).stream()
+                .map(customerMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/search/timeslot")
-    public ResponseEntity<List<Customer>> searchByTimeSlot(@RequestParam String timeSlot) {
-        return ResponseEntity.ok(customerService.searchByTimeSlot(timeSlot));
+    public ResponseEntity<List<CustomerDTO>> searchByTimeSlot(@RequestParam String timeSlot) {
+        List<CustomerDTO> list = customerService.searchByTimeSlot(timeSlot).stream()
+                .map(customerMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
     }
 }

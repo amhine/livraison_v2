@@ -178,6 +178,9 @@ public class TourServiceImpl implements TourService {
         if (optimizer instanceof NearestNeighborOptimizer) {
             return OptimizerType.plus_proche_voisin;
         }
+        if (optimizer instanceof com.livraison.optimizer.AIOptimizer) {
+            return OptimizerType.ai_optimizer;
+        }
         return OptimizerType.clarke_et_wright;
     }
 

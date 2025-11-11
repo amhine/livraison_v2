@@ -13,9 +13,9 @@ public interface TourService {
     TourDTO save(TourDTO dto);
     TourDTO update(Long id, TourDTO dto);
     void delete(Long id);
-    
+
     TourDTO optimizeTour(Long id, TourOptimizer optimizer);
-    
+
     double getTotalDistance(Long id);
     double getTotalDistanceAfterOptimization(Long id, TourOptimizer optimizer);
 
@@ -23,3 +23,4 @@ public interface TourService {
 
     TourDTO updateStatus(Long id, TourStatus status);
 }
+

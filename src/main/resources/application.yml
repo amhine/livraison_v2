@@ -25,5 +25,20 @@ logging:
   level:
     root: INFO
     org.hibernate.SQL: DEBUG
-optimazer:
-  algorithme: //nom algo
+optimizer:
+  type: ai_optimizer  # ai | nearest | clarke
+
+ai:
+  provider: openai   # openai | ollama
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      chat:
+        options:
+          model: gpt-4o-mini
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: tinyllama
