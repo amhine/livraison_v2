@@ -1,17 +1,14 @@
 
--- 1. Insertion des Véhicules
 INSERT INTO vehicle (type, capacite_poids, capacite_volume, livraisons_max) VALUES
    ('velo', 50, 0.5, 15),
    ('camionnette', 1000, 8.0, 50),
    ('camion', 5000, 40.0, 100);
 
--- 2. Insertion des Entrepôts (Warehouses)
 INSERT INTO warehouses (name, address, latitude, longitude, heure_ouverture, heure_fermeture) VALUES
     ('Depot Central Paris', '1 Rue Centrale, Paris 75001', 48.8566, 2.3522, '06:00:00', '22:00:00'),
     ('Depot Lyon Confluence', '10 Avenue Lumiere, Lyon 69002', 45.7640, 4.8357, '06:00:00', '22:00:00'),
     ('Depot Marseille Vieux-Port', '5 Quai du Port, Marseille 13001', 43.2965, 5.3698, '06:00:00', '22:00:00');
 
--- 3. Insertion des Customers (Nouveauté V2)
 INSERT INTO customer (name, address, latitude, longitude, preferred_time_slot) VALUES
     ('Alice Martin', '12 Rue des Fleurs, Paris 75010', 48.8606, 2.3376, '09:00-11:00'),
     ('Bob Dupont', '5 Boulevard Voltaire, Paris 75011', 48.8570, 2.3709, '14:00-16:00'),
@@ -30,7 +27,6 @@ INSERT INTO tour (date, distance_totale, optimizer_used, status, vehicle_id, war
     ('2025-11-02', 0, 'clarke_et_wright', 'COMPLETED', 3, 1),
     ('2025-11-03', 0, 'plus_proche_voisin', 'COMPLETED', 2, 3);
 
--- Deliveries
 INSERT INTO delivery (name_client, address, latitude, longitude, poids, volume, status, tour_id, customer_id, delivery_order) VALUES
   ('Alice Martin', '12 Rue des Fleurs, Paris 75010', 48.8606, 2.3376, 2.5, 0.02, 'en_attente', 1, 1, 0),
   ('Bob Dupont', '5 Boulevard Voltaire, Paris 75011', 48.8570, 2.3709, 7.0, 0.05, 'en_attente', 1, 2, 1),

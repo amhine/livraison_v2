@@ -5,7 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <!-- Ajout de l'entité Customer -->
     <changeSet id="2" author="Nihad Amhine" context="v2.0">
         <createTable tableName="customer">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -23,7 +22,6 @@
         </rollback>
     </changeSet>
 
-    <!-- Ajout de l'entité DeliveryHistory -->
     <changeSet id="3" author="Nihad Amhine" context="v2.0">
         <createTable tableName="delivery_history">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -44,7 +42,6 @@
         </rollback>
     </changeSet>
 
-    <!-- Ajouter colonne delivery_order sur delivery -->
     <changeSet id="2-delivery-add-order" author="Nihad Amhine" context="v2.0">
         <addColumn tableName="delivery">
             <column name="delivery_order" type="INT" defaultValueNumeric="0"/>
@@ -54,7 +51,6 @@
         </rollback>
     </changeSet>
 
-    <!-- Ajouter la relation Delivery -> Customer -->
     <changeSet id="2-delivery-add-customer-fk" author="Nihad Amhine" context="v2.0">
         <addColumn tableName="delivery">
             <column name="customer_id" type="BIGINT"/>
@@ -78,7 +74,6 @@
         </rollback>
     </changeSet>
 
-    <!-- Ajouter colonne status sur tour (V2) -->
     <changeSet id="2-tour-add-status" author="Nihad Amhine" context="v2.0">
         <addColumn tableName="tour">
             <column name="status" type="VARCHAR(30)"/>

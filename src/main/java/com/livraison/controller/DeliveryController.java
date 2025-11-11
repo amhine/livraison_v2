@@ -17,8 +17,6 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
-
-
     @GetMapping("")
     public ResponseEntity<List<DeliveryDTO>> getAllDeliveries() {
         return ResponseEntity.ok(deliveryService.getAllDeliveries());
