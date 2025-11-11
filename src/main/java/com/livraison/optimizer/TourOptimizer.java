@@ -6,5 +6,5 @@ import com.livraison.entity.Warehouses;
 import java.util.List;
 
 public interface TourOptimizer {
-    List<Delivery> optimize(Warehouses warehouse, List<Delivery> deliveries);
+    List<Delivery> optimize(Warehouses warehouses, List<Delivery> deliveries);
 }

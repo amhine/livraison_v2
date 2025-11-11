@@ -5,9 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <!-- V1: tables initiales du domaine -->
-
-    <!-- 1) Table DELIVERY (déjà existante) -->
     <changeSet id="1" author="Nihad Amhine" context="v1.0">
         <createTable tableName="delivery">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -25,7 +22,6 @@
         </rollback>
     </changeSet>
 
-    <!-- 2) Table VEHICLE -->
     <changeSet id="1-vehicle" author="Nihad Amhine" context="v1.0">
         <createTable tableName="vehicle">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -41,7 +37,6 @@
         </rollback>
     </changeSet>
 
-    <!-- 3) Table WAREHOUSES -->
     <changeSet id="1-warehouses" author="Nihad Amhine" context="v1.0">
         <createTable tableName="warehouses">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -59,7 +54,6 @@
         </rollback>
     </changeSet>
 
-    <!-- 4) Table TOUR (avec FKs vers vehicle et warehouses) -->
     <changeSet id="1-tour" author="Nihad Amhine" context="v1.0">
         <createTable tableName="tour">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -84,7 +78,6 @@
         </rollback>
     </changeSet>
 
-    <!-- 5) Compléter DELIVERY en V1: status + tour_id + FK vers tour -->
     <changeSet id="1-delivery-complements" author="Nihad Amhine" context="v1.0">
         <addColumn tableName="delivery">
             <column name="status" type="VARCHAR(50)"/>

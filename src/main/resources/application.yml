@@ -1,6 +1,3 @@
-# ============================================
-# 🌍 Configuration Spring Boot - Livraison V2
-# ============================================
 
 spring:
   application:
@@ -16,9 +13,6 @@ spring:
 server:
   port: ${SERVER_PORT}
 
-# ============================================
-# 🧠 Swagger / OpenAPI Configuration
-# ============================================
 springdoc:
   api-docs:
     path: /api-docs
@@ -27,10 +21,9 @@ springdoc:
     operationsSorter: method
     tagsSorter: alpha
 
-# ============================================
-# 🪵 Logging (par défaut)
-# ============================================
 logging:
   level:
     root: INFO
     org.hibernate.SQL: DEBUG
+optimazer:
+  algorithme: //nom algo
