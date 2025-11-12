@@ -1,10 +1,11 @@
 package com.livraison.controller;
 
 import com.livraison.dto.TourDTO;
-import com.livraison.optimizer.ClarkeWrightOptimizer;
-import com.livraison.optimizer.NearestNeighborOptimizer;
-import com.livraison.optimizer.TourOptimizer;
+import com.livraison.entity.enums.OptimizerType;
 import com.livraison.service.TourService;
+import com.livraison.service.OptimizerFactory;
+import com.livraison.optimizer.TourOptimizer;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,22 +13,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.livraison.dto.OptimizeTourRequest;
+import com.livraison.entity.enums.OptimizerType;
 
 @RestController
 @RequestMapping("/api/tours")
 public class TourController {
 
     private final TourService tourService;
+    private final OptimizerFactory optimizerFactory;
 
-    public TourController(TourService tourService) {
+    public TourController(TourService tourService, OptimizerFactory optimizerFactory) {
         this.tourService = tourService;
+        this.optimizerFactory = optimizerFactory;
     }
 
     @GetMapping
     public ResponseEntity<List<TourDTO>> getAllTours() {
         return ResponseEntity.ok(tourService.findAll());
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<TourDTO> getTourById(@PathVariable Long id) {
@@ -39,7 +42,6 @@ public class TourController {
     public ResponseEntity<TourDTO> createTour(@RequestBody TourDTO tourDTO) {
         return ResponseEntity.ok(tourService.save(tourDTO));
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<TourDTO> updateTour(@PathVariable Long id, @RequestBody TourDTO dto) {
@@ -53,33 +55,12 @@ public class TourController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/optimize")
-    public ResponseEntity<TourDTO> optimizeTour(
-            @PathVariable Long id,
-            @RequestParam(name = "algorithm", defaultValue = "nearest") String algorithm
-    ) {
-        TourOptimizer optimizer;
+   
 
-        switch (algorithm.toLowerCase()) {
-            case "clarke":
-            case "clarkewright":
-                optimizer = new ClarkeWrightOptimizer();
-                break;
-            case "nearest":
-            default:
-                optimizer = new NearestNeighborOptimizer();
-                break;
-        }
-
-        return ResponseEntity.ok(tourService.optimizeTour(id, optimizer));
-    }
 
     @GetMapping("/{id}/optimize")
-    public ResponseEntity<TourDTO> optimizeTourGet(
-            @PathVariable Long id,
-            @RequestParam(name = "algorithm", defaultValue = "nearest") String algorithm
-    ) {
-        return optimizeTour(id, algorithm);
+    public ResponseEntity<TourDTO> getOptimizedTour(@PathVariable Long id) {
+        return ResponseEntity.ok(tourService.optimizeTour(id));
     }
 
     @GetMapping("/{id}/distance")
@@ -92,8 +73,15 @@ public class TourController {
     public ResponseEntity<Map<String, Object>> compareAlgorithms(@PathVariable Long id) {
         Map<String, Object> result = new HashMap<>();
 
-        double distanceNearest = tourService.getTotalDistanceAfterOptimization(id, new NearestNeighborOptimizer());
-        double distanceClarke = tourService.getTotalDistanceAfterOptimization(id, new ClarkeWrightOptimizer());
+        TourOptimizer nearest = optimizerFactory.getOptimizer(OptimizerType.plus_proche_voisin);
+        TourOptimizer clarke = optimizerFactory.getOptimizer(OptimizerType.clarke_et_wright);
+
+        if (nearest == null || clarke == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        double distanceNearest = tourService.getTotalDistanceAfterOptimization(id, nearest);
+        double distanceClarke = tourService.getTotalDistanceAfterOptimization(id, clarke);
 
         result.put("tourId", id);
         result.put("nearest_neighbor_distance", distanceNearest);
@@ -103,16 +91,4 @@ public class TourController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/optimize")
-    public ResponseEntity<TourDTO> createOptimizedTour(
-            @RequestParam(name = "optimizer", defaultValue = "CLARKE_WRIGHT") String optimizer,
-            @RequestBody OptimizeTourRequest req
-    ) {
-        TourOptimizer algo = "NEAREST_NEIGHBOR".equalsIgnoreCase(optimizer)
-                ? new NearestNeighborOptimizer()
-                : new ClarkeWrightOptimizer();
-
-        TourDTO created = tourService.createAndOptimize(req, algo);
-        return ResponseEntity.ok(created);
-    }
 }

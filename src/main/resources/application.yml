@@ -25,5 +25,9 @@ logging:
   level:
     root: INFO
     org.hibernate.SQL: DEBUG
-optimazer:
-  algorithme: //nom algo
+optimizer:
+  type: ai_optimizer  # ai | nearest | clarke
+
+ai:
+  provider: openai   # openai | ollama
+

@@ -25,7 +25,9 @@ INSERT INTO tour (date, distance_totale, optimizer_used, status, vehicle_id, war
     ('2025-11-01', 0, 'plus_proche_voisin', 'PLANNED', 2, 1),
     ('2025-11-01', 0, 'clarke_et_wright', 'IN_PROGRESS', 1, 2),
     ('2025-11-02', 0, 'clarke_et_wright', 'COMPLETED', 3, 1),
+    ('2025-11-02', 0, 'ai_optimizer', 'COMPLETED', 3, 1),
     ('2025-11-03', 0, 'plus_proche_voisin', 'COMPLETED', 2, 3);
+
 
 INSERT INTO delivery (name_client, address, latitude, longitude, poids, volume, status, tour_id, customer_id, delivery_order) VALUES
   ('Alice Martin', '12 Rue des Fleurs, Paris 75010', 48.8606, 2.3376, 2.5, 0.02, 'en_attente', 1, 1, 0),

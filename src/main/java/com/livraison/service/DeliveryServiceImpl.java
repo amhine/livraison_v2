@@ -9,6 +9,9 @@ import com.livraison.repository.DeliveryRepository;
 import com.livraison.repository.TourRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -96,5 +99,32 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .orElseThrow(() -> new EntityNotFoundException("Delivery not found with id " + id));
         deliveryRepository.delete(existing);
     }
-    
+
+    @Override
+    public Page<DeliveryDTO> getDeliveries(Pageable pageable) {
+        Page<Delivery> page = deliveryRepository.findAll(pageable);
+        List<DeliveryDTO> content = page.getContent().stream().map(deliveryMapper::toDTO).collect(Collectors.toList());
+        return new PageImpl<>(content, pageable, page.getTotalElements());
+    }
+
+    @Override
+    public Page<DeliveryDTO> searchByName(String name, Pageable pageable) {
+        Page<Delivery> page = deliveryRepository.findByNameClientContainingIgnoreCase(name == null ? "" : name, pageable);
+        List<DeliveryDTO> content = page.getContent().stream().map(deliveryMapper::toDTO).collect(Collectors.toList());
+        return new PageImpl<>(content, pageable, page.getTotalElements());
+    }
+
+    @Override
+    public Page<DeliveryDTO> findByStatus(StatusLivraison status, Pageable pageable) {
+        Page<Delivery> page = deliveryRepository.findByStatus(status, pageable);
+        List<DeliveryDTO> content = page.getContent().stream().map(deliveryMapper::toDTO).collect(Collectors.toList());
+        return new PageImpl<>(content, pageable, page.getTotalElements());
+    }
+
+    @Override
+    public Page<DeliveryDTO> searchByGeo(double minLat, double maxLat, double minLon, double maxLon, Pageable pageable) {
+        Page<Delivery> page = deliveryRepository.searchByGeo(minLat, maxLat, minLon, maxLon, pageable);
+        List<DeliveryDTO> content = page.getContent().stream().map(deliveryMapper::toDTO).collect(Collectors.toList());
+        return new PageImpl<>(content, pageable, page.getTotalElements());
+    }
 }

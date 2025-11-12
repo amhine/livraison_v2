@@ -25,7 +25,6 @@ public class AIOptimizer implements TourOptimizer {
             return List.of();
         }
 
-        // Construire le JSON à envoyer à l’IA
         String deliveriesJson = deliveries.stream()
                 .map(d -> String.format("{\"id\":\"%s\",\"lat\":%f,\"lon\":%f}",
                         d.getId(), d.getLatitude(), d.getLongitude()))
@@ -43,13 +42,8 @@ public class AIOptimizer implements TourOptimizer {
                 "  }\n" +
                 "}";
 
-        // Appel au client LLM
         String llmResponse = llmClient.callLlm(promptJson);
-
-        // Extraction des IDs ordonnés
         List<String> orderedIds = llmClient.extractOrderedIds(llmResponse);
-
-        // Remapping vers les objets Delivery
         return orderedIds.stream()
                 .map(id -> deliveries.stream().filter(d -> d.getId().equals(id)).findFirst().orElse(null))
                 .filter(d -> d != null)

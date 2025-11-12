@@ -4,11 +4,8 @@ import com.livraison.dto.TourDTO;
 import com.livraison.entity.*;
 import com.livraison.mapper.TourMapper;
 import com.livraison.optimizer.NearestNeighborOptimizer;
-import com.livraison.repository.DeliveryRepository;
-import com.livraison.repository.DeliveryHistoryRepository;
-import com.livraison.repository.TourRepository;
-import com.livraison.repository.VehicleRepository;
-import com.livraison.repository.WarehouseRepository;
+import com.livraison.optimizer.TourOptimizer;
+import com.livraison.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -28,7 +25,7 @@ class TourServiceImplTest {
     private DeliveryRepository deliveryRepository;
     private DeliveryHistoryRepository deliveryHistoryRepository;
     private TourMapper tourMapper;
-
+    private OptimizerFactory optimizerFactory;
     private TourServiceImpl service;
 
     @BeforeEach
@@ -39,15 +36,15 @@ class TourServiceImplTest {
         deliveryRepository = mock(DeliveryRepository.class);
         deliveryHistoryRepository = mock(DeliveryHistoryRepository.class);
         tourMapper = new TourMapper();
-
-        // ✅ Correction : ajout du DeliveryHistoryRepository dans le constructeur
+        optimizerFactory = mock(OptimizerFactory.class);
         service = new TourServiceImpl(
                 tourRepository,
                 vehicleRepository,
                 warehouseRepository,
                 deliveryRepository,
                 deliveryHistoryRepository,
-                tourMapper
+                tourMapper,
+                optimizerFactory
         );
     }
 
@@ -70,8 +67,10 @@ class TourServiceImplTest {
 
         when(tourRepository.findById(10L)).thenReturn(Optional.of(tour));
         when(tourRepository.save(any(Tour.class))).thenAnswer(inv -> inv.getArgument(0));
+        TourOptimizer optimizer = new NearestNeighborOptimizer();
+        when(optimizerFactory.getOptimizer(any())).thenReturn(optimizer);
+        TourDTO dto = service.optimizeTour(10L);
 
-        TourDTO dto = service.optimizeTour(10L, new NearestNeighborOptimizer());
         assertNotNull(dto);
         assertEquals(10L, dto.getId());
 
