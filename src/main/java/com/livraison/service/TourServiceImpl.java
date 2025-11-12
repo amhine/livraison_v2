@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,8 @@ public class TourServiceImpl implements TourService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryHistoryRepository deliveryHistoryRepository;
     private final TourMapper tourMapper;
+    private final OptimizerFactory optimizerFactory;
+
 
     @Override
     public List<TourDTO> findAll() {
@@ -109,15 +112,18 @@ public class TourServiceImpl implements TourService {
         return tourMapper.toDTO(saved);
     }
 
+
+    @Value("${optimizer.type}")
+    private OptimizerType defaultOptimizerType;
     @Override
-    public TourDTO optimizeTour(Long tourId, TourOptimizer optimizer) {
+    public TourDTO optimizeTour(Long tourId) {
         Optional<Tour> optTour = tourRepository.findById(tourId);
         if (optTour.isEmpty()) return null;
 
         Tour tour = optTour.get();
         Warehouses warehouses = tour.getWarehouses();
         List<Delivery> deliveries = tour.getDeliveries();
-
+        TourOptimizer optimizer = optimizerFactory.getOptimizer(defaultOptimizerType);
         if (warehouses == null || deliveries == null || deliveries.isEmpty()) {
             tour.setDistanceTotale(0D);
             tour.setOptimizerUsed(resolveOptimizerType(optimizer));

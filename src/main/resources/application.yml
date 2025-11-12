@@ -31,14 +31,3 @@ optimizer:
 ai:
   provider: openai   # openai | ollama
 
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:}
-      chat:
-        options:
-          model: gpt-4o-mini
-    ollama:
-      base-url: http://localhost:11434
-      chat:
-        options:
-          model: tinyllama

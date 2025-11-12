@@ -5,6 +5,7 @@ import com.livraison.entity.*;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Collectors;
 @Component
 public class TourMapper {
@@ -19,8 +20,7 @@ public class TourMapper {
         dto.setOptimizerUsed(tour.getOptimizerUsed());
         dto.setVehicleId(tour.getVehicle() != null ? tour.getVehicle().getId() : null);
         dto.setWarehouseId(tour.getWarehouses() != null ? tour.getWarehouses().getId() : null);
-        dto.setDeliveryIds(tour.getDeliveries() != null ?
-                tour.getDeliveries().stream().map(Delivery::getId).collect(Collectors.toList()) : null);
+        dto.setDeliveryIds(tour.getDeliveries() != null ? tour.getDeliveries().stream().map(Delivery::getId).collect(Collectors.toList()) : List.of());
         return dto;
     }
 

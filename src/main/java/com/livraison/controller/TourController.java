@@ -5,6 +5,7 @@ import com.livraison.entity.enums.OptimizerType;
 import com.livraison.service.TourService;
 import com.livraison.service.OptimizerFactory;
 import com.livraison.optimizer.TourOptimizer;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.livraison.dto.OptimizeTourRequest;
+import com.livraison.entity.enums.OptimizerType;
 
 @RestController
 @RequestMapping("/api/tours")
@@ -53,26 +55,12 @@ public class TourController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/optimize")
-    public ResponseEntity<TourDTO> optimizeTour(
-            @PathVariable Long id,
-            @RequestParam(name = "algorithm", defaultValue = "plus_proche_voisin") OptimizerType algorithm
-    ) {
-        TourOptimizer optimizer = optimizerFactory.getOptimizer(algorithm);
+   
 
-        if (optimizer == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        return ResponseEntity.ok(tourService.optimizeTour(id, optimizer));
-    }
 
     @GetMapping("/{id}/optimize")
-    public ResponseEntity<TourDTO> optimizeTourGet(
-            @PathVariable Long id,
-            @RequestParam(name = "algorithm", defaultValue = "plus_proche_voisin") OptimizerType algorithm
-    ) {
-        return optimizeTour(id, algorithm);
+    public ResponseEntity<TourDTO> getOptimizedTour(@PathVariable Long id) {
+        return ResponseEntity.ok(tourService.optimizeTour(id));
     }
 
     @GetMapping("/{id}/distance")
@@ -103,18 +91,4 @@ public class TourController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/optimize")
-    public ResponseEntity<TourDTO> createOptimizedTour(
-            @RequestParam(name = "optimizer", defaultValue = "clarke_et_wright") OptimizerType optimizer,
-            @RequestBody OptimizeTourRequest req
-    ) {
-        TourOptimizer algo = optimizerFactory.getOptimizer(optimizer);
-
-        if (algo == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        TourDTO created = tourService.createAndOptimize(req, algo);
-        return ResponseEntity.ok(created);
-    }
 }
