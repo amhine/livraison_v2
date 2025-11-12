@@ -20,6 +20,13 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.save(customer);
     }
 
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+
     @Override
     public Customer updateCustomer(Long id, Customer customer) {
         Optional<Customer> existingCustomer = customerRepository.findById(id);
@@ -39,16 +46,6 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
-    }
-
-    @Override
-    public Optional<Customer> getCustomerById(Long id) {
-        return customerRepository.findById(id);
-    }
-
-    @Override
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
     }
 
     @Override

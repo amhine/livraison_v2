@@ -32,20 +32,21 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
         <!-- WebClient (Spring WebFlux) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
-        <!-- JSON (org.json) -->
+        <!-- JSON -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
 
-        <!-- Reactor Core (si non inclus via WebFlux) -->
+        <!-- Reactor Core -->
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
@@ -57,7 +58,7 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
-        <!-- H2 -->
+        <!-- H2 Database -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -70,6 +71,11 @@
             <artifactId>spring-dotenv</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.2</version>
+        </dependency>
 
         <!-- Lombok -->
         <dependency>
@@ -77,11 +83,6 @@
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.cdimascio</groupId>
-            <artifactId>dotenv-java</artifactId>
-            <version>3.0.2</version>
         </dependency>
 
         <!-- MapStruct -->
@@ -91,24 +92,38 @@
             <version>1.5.5.Final</version>
         </dependency>
 
-        <!-- Spring AI starters for LLM providers -->
+        <!-- Spring AI (OpenAI + Ollama) -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-M1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-M1</version>
         </dependency>
 
         <!-- Tests -->
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <scope>test</scope>
+            </dependency>
+        <!-- JUnit 5 -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
+
 
         <!-- Swagger -->
         <dependency>
@@ -118,8 +133,33 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>spring-milestone</id>
+            <name>Spring Milestone Repository</name>
+            <url>https://repo.spring.io/milestone</url>
+        </repository>
+        <repository>
+            <id>spring-snapshot</id>
+            <name>Spring Snapshot Repository</name>
+            <url>https://repo.spring.io/snapshot</url>
+        </repository>
+    </repositories>
+
     <build>
-        <plugins>
+
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.1.2</version>
+                    <configuration>
+                        <useModulePath>false</useModulePath>
+                    </configuration>
+                </plugin>
+
+
+
             <!-- Compiler avec MapStruct + Lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
