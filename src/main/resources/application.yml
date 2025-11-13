@@ -11,9 +11,11 @@ spring:
   ai:
 
     ollama:
-      base-url: http://127.0.0.1:11434
+      base-url: http://localhost:11434
       chat:
-        model: tinyllama
+        model: llama2
+        optimizer:
+          type: ai_optimizer
 
 server:
   port: ${SERVER_PORT}
