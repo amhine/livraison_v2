@@ -9,8 +9,11 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
+
+    ollama:
+      base-url: http://127.0.0.1:11434
+      chat:
+        model: tinyllama
 
 server:
   port: ${SERVER_PORT}
@@ -28,8 +31,6 @@ logging:
     root: INFO
     org.hibernate.SQL: DEBUG
 
-optimizer:
-  type: plus_proche_voisin # ai | nearest | clarke
 
-ai:
-  provider: openai   # openai | ollama
+
+

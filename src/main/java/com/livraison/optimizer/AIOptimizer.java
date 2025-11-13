@@ -2,7 +2,7 @@ package com.livraison.optimizer;
 
 import com.livraison.entity.Delivery;
 import com.livraison.entity.Warehouses;
-import com.livraison.util.LlmClient;
+import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@ConditionalOnProperty(name = "optimizer.type", havingValue = "ai")
+@ConditionalOnProperty(name = "optimizer.type", havingValue = "ai_optimizer")
 public class AIOptimizer implements TourOptimizer {
 
-    private final LlmClient llmClient;
+    private final OllamaChatModel ollamaChatModel;
 
-    public AIOptimizer(LlmClient llmClient) {
-        this.llmClient = llmClient;
+    public AIOptimizer(OllamaChatModel ollamaChatModel) {
+        this.ollamaChatModel = ollamaChatModel;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class AIOptimizer implements TourOptimizer {
                         d.getId(), d.getLatitude(), d.getLongitude()))
                 .collect(Collectors.joining(",", "[", "]"));
 
-        String promptJson = "{\n" +
+        String prompt = "{\n" +
                 "  \"context\": \"Optimisation de tournées pour une flotte. Retourner un JSON structuré\",\n" +
                 "  \"warehouse\": {\"lat\":" + warehouse.getLatitude() + ",\"lon\":" + warehouse.getLongitude() + "},\n" +
                 "  \"deliveries\": " + deliveriesJson + ",\n" +
@@ -42,11 +42,18 @@ public class AIOptimizer implements TourOptimizer {
                 "  }\n" +
                 "}";
 
-        String llmResponse = llmClient.callLlm(promptJson);
-        List<String> orderedIds = llmClient.extractOrderedIds(llmResponse);
+        String llmResponse = ollamaChatModel.call(prompt);
+
+        List<String> orderedIds = extractOrderedIdsFromJson(llmResponse);
+
         return orderedIds.stream()
                 .map(id -> deliveries.stream().filter(d -> d.getId().equals(id)).findFirst().orElse(null))
                 .filter(d -> d != null)
                 .collect(Collectors.toList());
+    }
+
+    private List<String> extractOrderedIdsFromJson(String json) {
+        // TODO: utiliser Jackson/Gson pour parser proprement
+        return List.of(json.replaceAll("[\\[\\]\"]", "").split(","));
     }
 }
