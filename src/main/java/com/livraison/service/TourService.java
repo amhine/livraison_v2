@@ -17,10 +17,9 @@ public interface TourService {
     TourDTO optimizeTour(Long id);
 
     double getTotalDistance(Long id);
-    double getTotalDistanceAfterOptimization(Long id, TourOptimizer optimizer);
+    double getTotalDistanceAfterOptimization(Long id, TourOptimizer optimizer); // Garder pour comparaison
 
-    TourDTO createAndOptimize(OptimizeTourRequest req, TourOptimizer optimizer);
+    TourDTO createAndOptimize(OptimizeTourRequest req); // Supprimer le paramètre optimizer
 
     TourDTO updateStatus(Long id, TourStatus status);
 }
-
