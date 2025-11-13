@@ -29,3 +29,8 @@ sql:
     mode: never
 server:
   port: 8082
+optimizer:
+  type: ai_optimizer # ai | nearest | clarke
+
+ai:
+  provider: ollama

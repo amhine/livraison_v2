@@ -6,6 +6,8 @@ import com.livraison.service.TourService;
 import com.livraison.service.OptimizerFactory;
 import com.livraison.optimizer.TourOptimizer;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +19,12 @@ import com.livraison.entity.enums.OptimizerType;
 
 @RestController
 @RequestMapping("/api/tours")
+@RequiredArgsConstructor
 public class TourController {
 
     private final TourService tourService;
     private final OptimizerFactory optimizerFactory;
 
-    public TourController(TourService tourService, OptimizerFactory optimizerFactory) {
-        this.tourService = tourService;
-        this.optimizerFactory = optimizerFactory;
-    }
 
     @GetMapping
     public ResponseEntity<List<TourDTO>> getAllTours() {
