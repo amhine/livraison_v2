@@ -3,19 +3,14 @@ package com.livraison.controller;
 import com.livraison.dto.TourDTO;
 import com.livraison.entity.enums.OptimizerType;
 import com.livraison.service.TourService;
-import com.livraison.service.OptimizerFactory;
 import com.livraison.optimizer.TourOptimizer;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.livraison.dto.OptimizeTourRequest;
-import com.livraison.entity.enums.OptimizerType;
 
 @RestController
 @RequestMapping("/api/tours")
@@ -23,8 +18,9 @@ import com.livraison.entity.enums.OptimizerType;
 public class TourController {
 
     private final TourService tourService;
-    private final OptimizerFactory optimizerFactory;
-
+    private final TourOptimizer tourOptimizer; // Optimizer principal configuré
+    private final TourOptimizer nearestNeighborOptimizer; // Pour comparaison
+    private final TourOptimizer clarkeWrightOptimizer; // Pour comparaison
 
     @GetMapping
     public ResponseEntity<List<TourDTO>> getAllTours() {
@@ -54,9 +50,6 @@ public class TourController {
         return ResponseEntity.noContent().build();
     }
 
-   
-
-
     @GetMapping("/{id}/optimize")
     public ResponseEntity<TourDTO> getOptimizedTour(@PathVariable Long id) {
         return ResponseEntity.ok(tourService.optimizeTour(id));
@@ -72,22 +65,30 @@ public class TourController {
     public ResponseEntity<Map<String, Object>> compareAlgorithms(@PathVariable Long id) {
         Map<String, Object> result = new HashMap<>();
 
-        TourOptimizer nearest = optimizerFactory.getOptimizer(OptimizerType.plus_proche_voisin);
-        TourOptimizer clarke = optimizerFactory.getOptimizer(OptimizerType.clarke_et_wright);
-
-        if (nearest == null || clarke == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        double distanceNearest = tourService.getTotalDistanceAfterOptimization(id, nearest);
-        double distanceClarke = tourService.getTotalDistanceAfterOptimization(id, clarke);
+        double distanceNearest = tourService.getTotalDistanceAfterOptimization(id, nearestNeighborOptimizer);
+        double distanceClarke = tourService.getTotalDistanceAfterOptimization(id, clarkeWrightOptimizer);
+        double distanceCurrent = tourService.getTotalDistanceAfterOptimization(id, tourOptimizer);
 
         result.put("tourId", id);
+        result.put("current_algorithm", tourOptimizer.getClass().getSimpleName());
+        result.put("current_distance", distanceCurrent);
         result.put("nearest_neighbor_distance", distanceNearest);
         result.put("clarke_wright_distance", distanceClarke);
-        result.put("better_algorithm", distanceNearest < distanceClarke ? "Nearest Neighbor" : "Clarke Wright");
+
+        // Déterminer le meilleur algorithme
+        String bestAlgorithm = "Current";
+        double bestDistance = distanceCurrent;
+
+        if (distanceNearest < bestDistance) {
+            bestAlgorithm = "Nearest Neighbor";
+            bestDistance = distanceNearest;
+        }
+        if (distanceClarke < bestDistance) {
+            bestAlgorithm = "Clarke Wright";
+        }
+
+        result.put("best_algorithm", bestAlgorithm);
 
         return ResponseEntity.ok(result);
     }
-
 }

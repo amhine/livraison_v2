@@ -29,13 +29,17 @@ public class AIOptimizer implements TourOptimizer {
             return List.of();
         }
 
-        // Conversion des livraisons en JSON
+        // Si ChatClient n'est pas disponible, retourner l'ordre original
+        if (chatClient == null) {
+            return deliveries;
+        }
+
+        // ... reste du code inchangé ...
         String deliveriesJson = deliveries.stream()
                 .map(d -> String.format("{\"id\":\"%s\",\"lat\":%f,\"lon\":%f}",
                         d.getId(), d.getLatitude(), d.getLongitude()))
                 .collect(Collectors.joining(",", "[", "]"));
 
-        // Construction du prompt
         String promptText = "{\n" +
                 "  \"context\": \"Optimisation de tournées pour une flotte. Retourner un JSON structuré\",\n" +
                 "  \"warehouse\": {\"lat\":" + warehouse.getLatitude() + ",\"lon\":" + warehouse.getLongitude() + "},\n" +
@@ -49,16 +53,13 @@ public class AIOptimizer implements TourOptimizer {
                 "}";
 
         try {
-            // Nouvelle API de ChatClient avec Fluent API
             String llmResponse = chatClient.prompt()
                     .user(promptText)
                     .call()
                     .content();
 
-            // Extraction des IDs ordonnés
             List<String> orderedIds = extractOrderedIdsFromJson(llmResponse);
 
-            // Reconstruction de la liste de livraisons optimisée
             return orderedIds.stream()
                     .map(id -> deliveries.stream()
                             .filter(d -> d.getId().equals(id))
@@ -68,17 +69,13 @@ public class AIOptimizer implements TourOptimizer {
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
-            // En cas d'erreur, retourner l'ordre original
             System.err.println("Erreur lors de l'optimisation AI: " + e.getMessage());
             return deliveries;
         }
     }
 
     private List<String> extractOrderedIdsFromJson(String json) {
-        // TODO: utiliser Jackson/Gson pour parser proprement
-        // Solution temporaire - à améliorer avec un vrai parsing JSON
         try {
-            // Extraction basique - à adapter selon le format de réponse réel
             String cleanJson = json.replaceAll("[\\[\\]\"]", "").trim();
             if (cleanJson.isEmpty()) {
                 return List.of();

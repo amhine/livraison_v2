@@ -25,7 +25,7 @@ class TourServiceImplTest {
     private DeliveryRepository deliveryRepository;
     private DeliveryHistoryRepository deliveryHistoryRepository;
     private TourMapper tourMapper;
-    private OptimizerFactory optimizerFactory;
+    private TourOptimizer tourOptimizer;
     private TourServiceImpl service;
 
     @BeforeEach
@@ -36,7 +36,7 @@ class TourServiceImplTest {
         deliveryRepository = mock(DeliveryRepository.class);
         deliveryHistoryRepository = mock(DeliveryHistoryRepository.class);
         tourMapper = new TourMapper();
-        optimizerFactory = mock(OptimizerFactory.class);
+        tourOptimizer = new NearestNeighborOptimizer(); // Optimizer direct
         service = new TourServiceImpl(
                 tourRepository,
                 vehicleRepository,
@@ -44,7 +44,7 @@ class TourServiceImplTest {
                 deliveryRepository,
                 deliveryHistoryRepository,
                 tourMapper,
-                optimizerFactory
+                tourOptimizer
         );
     }
 
@@ -67,8 +67,7 @@ class TourServiceImplTest {
 
         when(tourRepository.findById(10L)).thenReturn(Optional.of(tour));
         when(tourRepository.save(any(Tour.class))).thenAnswer(inv -> inv.getArgument(0));
-        TourOptimizer optimizer = new NearestNeighborOptimizer();
-        when(optimizerFactory.getOptimizer(any())).thenReturn(optimizer);
+
         TourDTO dto = service.optimizeTour(10L);
 
         assertNotNull(dto);

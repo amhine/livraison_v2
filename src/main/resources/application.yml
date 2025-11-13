@@ -8,6 +8,7 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
+    drop-first: true
   ai:
 
     ollama:
@@ -15,7 +16,7 @@ spring:
       chat:
         model: llama2
         optimizer:
-          type: ai_optimizer
+          type: plus_proche_voisin
 
 server:
   port: ${SERVER_PORT}
@@ -33,6 +34,10 @@ logging:
     root: INFO
     org.hibernate.SQL: DEBUG
 
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
 
 
 

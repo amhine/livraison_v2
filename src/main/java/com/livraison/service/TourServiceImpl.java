@@ -31,8 +31,7 @@ public class TourServiceImpl implements TourService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryHistoryRepository deliveryHistoryRepository;
     private final TourMapper tourMapper;
-    private final OptimizerFactory optimizerFactory;
-
+    private final TourOptimizer tourOptimizer; // Injection directe de l'optimizer
 
     @Override
     public List<TourDTO> findAll() {
@@ -112,9 +111,9 @@ public class TourServiceImpl implements TourService {
         return tourMapper.toDTO(saved);
     }
 
-
     @Value("${optimizer.type}")
     private OptimizerType defaultOptimizerType;
+
     @Override
     public TourDTO optimizeTour(Long tourId) {
         Optional<Tour> optTour = tourRepository.findById(tourId);
@@ -123,19 +122,19 @@ public class TourServiceImpl implements TourService {
         Tour tour = optTour.get();
         Warehouses warehouses = tour.getWarehouses();
         List<Delivery> deliveries = tour.getDeliveries();
-        TourOptimizer optimizer = optimizerFactory.getOptimizer(defaultOptimizerType);
+
         if (warehouses == null || deliveries == null || deliveries.isEmpty()) {
             tour.setDistanceTotale(0D);
-            tour.setOptimizerUsed(resolveOptimizerType(optimizer));
+            tour.setOptimizerUsed(defaultOptimizerType);
             return tourMapper.toDTO(tourRepository.save(tour));
         }
 
-        List<Delivery> ordered = optimizer.optimize(warehouses, deliveries);
+        List<Delivery> ordered = tourOptimizer.optimize(warehouses, deliveries);
         ordered.forEach(d -> d.setTour(tour));
 
         tour.setDeliveries(ordered);
         tour.setDistanceTotale(computeTotalDistance(warehouses, ordered));
-        tour.setOptimizerUsed(resolveOptimizerType(optimizer));
+        tour.setOptimizerUsed(defaultOptimizerType);
 
         return tourMapper.toDTO(tourRepository.save(tour));
     }
@@ -154,7 +153,7 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
-    public TourDTO createAndOptimize(OptimizeTourRequest req, TourOptimizer optimizer) {
+    public TourDTO createAndOptimize(OptimizeTourRequest req) {
         Vehicle vehicle = vehicleRepository.findById(req.getVehicleId()).orElse(null);
         Warehouses warehouses = warehousesRepository.findById(req.getWarehouseId()).orElse(null);
         List<Delivery> deliveries = req.getDeliveryIds() != null ?
@@ -168,7 +167,7 @@ public class TourServiceImpl implements TourService {
                 .build();
 
         if (warehouses != null && !deliveries.isEmpty()) {
-            List<Delivery> ordered = optimizer.optimize(warehouses, deliveries);
+            List<Delivery> ordered = tourOptimizer.optimize(warehouses, deliveries);
             ordered.forEach(d -> d.setTour(toCreate));
             toCreate.setDeliveries(ordered);
             toCreate.setDistanceTotale(computeTotalDistance(warehouses, ordered));
@@ -176,18 +175,8 @@ public class TourServiceImpl implements TourService {
             toCreate.setDistanceTotale(0D);
         }
 
-        toCreate.setOptimizerUsed(resolveOptimizerType(optimizer));
+        toCreate.setOptimizerUsed(defaultOptimizerType);
         return tourMapper.toDTO(tourRepository.save(toCreate));
-    }
-
-    private OptimizerType resolveOptimizerType(TourOptimizer optimizer) {
-        if (optimizer instanceof NearestNeighborOptimizer) {
-            return OptimizerType.plus_proche_voisin;
-        }
-        if (optimizer instanceof com.livraison.optimizer.AIOptimizer) {
-            return OptimizerType.ai_optimizer;
-        }
-        return OptimizerType.clarke_et_wright;
     }
 
     private double computeTotalDistance(Warehouses warehouses, List<Delivery> sequence) {
@@ -228,6 +217,7 @@ public class TourServiceImpl implements TourService {
         List<Delivery> deliveries = tour.getDeliveries();
 
         if (warehouses == null || deliveries == null || deliveries.isEmpty()) return 0D;
+
         List<Delivery> optimizedDeliveries = optimizer.optimize(warehouses, deliveries);
         return computeTotalDistance(warehouses, optimizedDeliveries);
     }

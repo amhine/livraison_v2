@@ -1,10 +1,9 @@
-
 spring:
   datasource:
-    url: jdbc:h2:mem:livraison;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${DB_URL}
+    driver-class-name: ${DB_DRIVER}
+    username:  ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   h2:
     console:
@@ -24,13 +23,21 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
 
-sql:
-  init:
-    mode: never
+  # Configuration Spring AI Ollama
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: llama2
+        enabled: true
+
+  sql:
+    init:
+      mode: always
+      platform: h2
+
 server:
   port: 8082
-optimizer:
-  type: ai_optimizer # ai | nearest | clarke
 
-ai:
-  provider: ollama
+optimizer:
+  type: plus_proche_voisin
