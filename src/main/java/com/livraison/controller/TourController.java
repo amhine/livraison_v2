@@ -18,9 +18,9 @@ import java.util.Map;
 public class TourController {
 
     private final TourService tourService;
-    private final TourOptimizer tourOptimizer; // Optimizer principal configuré
-    private final TourOptimizer nearestNeighborOptimizer; // Pour comparaison
-    private final TourOptimizer clarkeWrightOptimizer; // Pour comparaison
+    private final TourOptimizer tourOptimizer;
+    private final TourOptimizer nearestNeighborOptimizer;
+    private final TourOptimizer clarkeWrightOptimizer;
 
     @GetMapping
     public ResponseEntity<List<TourDTO>> getAllTours() {
@@ -75,7 +75,6 @@ public class TourController {
         result.put("nearest_neighbor_distance", distanceNearest);
         result.put("clarke_wright_distance", distanceClarke);
 
-        // Déterminer le meilleur algorithme
         String bestAlgorithm = "Current";
         double bestDistance = distanceCurrent;
 

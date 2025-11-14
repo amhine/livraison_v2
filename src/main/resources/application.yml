@@ -5,18 +5,27 @@ spring:
     import: optional:file:.env.properties
   profiles:
     active: ${ACTIVE_PROFILE}
+
+  # Spring AI properties – elles fonctionnent à l'exécution
+  ai:
+    provider: ollama
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: llama2:latest
+
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
     drop-first: true
-  ai:
 
-    ollama:
-      base-url: http://localhost:11434
-      chat:
-        model: llama2
-        optimizer:
-          type: plus_proche_voisin
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+
+optimizer:
+  type: ai_optimizer
 
 server:
   port: ${SERVER_PORT}
@@ -33,11 +42,6 @@ logging:
   level:
     root: INFO
     org.hibernate.SQL: DEBUG
-
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:data.sql
-
-
-
+    org.springframework.ai: DEBUG
+    com.livraison.optimizer: DEBUG
+    org.springframework.web: DEBUG
