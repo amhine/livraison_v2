@@ -29,18 +29,14 @@ public class AIOptimizer implements TourOptimizer {
             return List.of();
         }
 
-        // If we have a small number of deliveries, no need for optimization
         if (deliveries.size() <= 2) {
             return deliveries;
         }
 
-        // If ChatClient is not available, return the original order
         if (chatClient == null) {
             System.out.println("ChatClient is null, returning original delivery order");
             return deliveries;
         }
-
-        // ... reste du code inchangé ...
         String deliveriesJson = deliveries.stream()
                 .map(d -> String.format("{\"id\":\"%s\",\"lat\":%f,\"lon\":%f}",
                         d.getId(), d.getLatitude(), d.getLongitude()))

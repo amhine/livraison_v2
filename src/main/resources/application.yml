@@ -6,7 +6,6 @@ spring:
   profiles:
     active: ${ACTIVE_PROFILE}
 
-  # Spring AI properties – elles fonctionnent à l'exécution
   ai:
     provider: ollama
     ollama:
