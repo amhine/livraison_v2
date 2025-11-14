@@ -23,8 +23,8 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
 
-  # Configuration Spring AI Ollama
   ai:
+    provider: ollama
     ollama:
       base-url: http://localhost:11434
       chat:
@@ -35,9 +35,8 @@ spring:
     init:
       mode: always
       platform: h2
-
+optimizer:
+  type: ai_optimizer
 server:
   port: 8082
 
-optimizer:
-  type: plus_proche_voisin

@@ -94,11 +94,19 @@
             <version>1.5.5.Final</version>
         </dependency>
 
+
+        <!-- Spring AI Core -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-core</artifactId>
+        </dependency>
+
         <!-- Spring AI Ollama Starter -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
         </dependency>
+
 
 
         <!-- Tests -->

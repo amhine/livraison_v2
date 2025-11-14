@@ -31,7 +31,7 @@ public class TourServiceImpl implements TourService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryHistoryRepository deliveryHistoryRepository;
     private final TourMapper tourMapper;
-    private final TourOptimizer tourOptimizer; // Injection directe de l'optimizer
+    private final TourOptimizer tourOptimizer;
 
     @Override
     public List<TourDTO> findAll() {

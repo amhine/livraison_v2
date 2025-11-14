@@ -29,8 +29,14 @@ public class AIOptimizer implements TourOptimizer {
             return List.of();
         }
 
-        // Si ChatClient n'est pas disponible, retourner l'ordre original
+        // If we have a small number of deliveries, no need for optimization
+        if (deliveries.size() <= 2) {
+            return deliveries;
+        }
+
+        // If ChatClient is not available, return the original order
         if (chatClient == null) {
+            System.out.println("ChatClient is null, returning original delivery order");
             return deliveries;
         }
 

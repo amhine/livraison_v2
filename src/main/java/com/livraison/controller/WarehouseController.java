@@ -20,7 +20,14 @@ public class WarehouseController {
     public ResponseEntity<WarehouseDTO> create(@RequestBody WarehouseDTO dto) {
         return ResponseEntity.ok(warehouseService.createWarehouse(dto));
     }
-
+    @GetMapping
+    public ResponseEntity<List<WarehouseDTO>> getAll() {
+        return ResponseEntity.ok(warehouseService.getAllWarehouses());
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<WarehouseDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(warehouseService.getWarehouseById(id));
+    }
     @PutMapping("/{id}")
     public ResponseEntity<WarehouseDTO> update(@PathVariable Long id, @RequestBody WarehouseDTO dto) {
         return ResponseEntity.ok(warehouseService.updateWarehouse(id, dto));
@@ -32,13 +39,7 @@ public class WarehouseController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<WarehouseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(warehouseService.getWarehouseById(id));
-    }
 
-    @GetMapping
-    public ResponseEntity<List<WarehouseDTO>> getAll() {
-        return ResponseEntity.ok(warehouseService.getAllWarehouses());
-    }
+
+
 }
