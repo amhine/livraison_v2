@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-@ConditionalOnProperty(name = "optimizer.type", havingValue = "clarke")
+@ConditionalOnProperty(name = "optimizer.type", havingValue = "clarke_et_wright")
 public class ClarkeWrightOptimizer implements TourOptimizer {
 
     private double distance(double lat1, double lon1, double lat2, double lon2) {
@@ -56,7 +56,7 @@ public class ClarkeWrightOptimizer implements TourOptimizer {
             }
         }
 
-        savings.sort((a, b) -> Double.compare(b.saving, a.saving)); // tri décroissant
+        savings.sort((a, b) -> Double.compare(b.saving, a.saving));
 
         Map<Integer, LinkedList<Integer>> tours = new HashMap<>();
         for (int i = 0; i < n; i++) {
@@ -87,3 +87,4 @@ public class ClarkeWrightOptimizer implements TourOptimizer {
         return null;
     }
 }
+

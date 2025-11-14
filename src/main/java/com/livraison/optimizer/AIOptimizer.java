@@ -3,13 +3,14 @@ package com.livraison.optimizer;
 import com.livraison.entity.Delivery;
 import com.livraison.entity.Warehouses;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
@@ -37,55 +38,114 @@ public class AIOptimizer implements TourOptimizer {
             System.out.println("ChatClient is null, returning original delivery order");
             return deliveries;
         }
-        String deliveriesJson = deliveries.stream()
-                .map(d -> String.format("{\"id\":\"%s\",\"lat\":%f,\"lon\":%f}",
-                        d.getId(), d.getLatitude(), d.getLongitude()))
-                .collect(Collectors.joining(",", "[", "]"));
 
-        String promptText = "{\n" +
-                "  \"context\": \"Optimisation de tournées pour une flotte. Retourner un JSON structuré\",\n" +
-                "  \"warehouse\": {\"lat\":" + warehouse.getLatitude() + ",\"lon\":" + warehouse.getLongitude() + "},\n" +
-                "  \"deliveries\": " + deliveriesJson + ",\n" +
-                "  \"constraints\": {\"vehicleCapacityKg\":1000, \"maxStops\":50},\n" +
-                "  \"outputFormat\": {\n" +
-                "    \"orderedDeliveries\": [\"id\"],\n" +
-                "    \"recommendations\": \"string explaining reasons\",\n" +
-                "    \"predictedRoutes\": [{\"from\":\"id\",\"to\":\"id\",\"distanceKm\":0.0}]\n" +
-                "  }\n" +
-                "}";
+        // Construire une description claire des livraisons
+        StringBuilder deliveriesDesc = new StringBuilder();
+        for (Delivery d : deliveries) {
+            deliveriesDesc.append(String.format("- Delivery %s: lat=%.6f, lon=%.6f\n",
+                    d.getId(), d.getLatitude(), d.getLongitude()));
+        }
+
+        String promptText = String.format(
+                "You are a route optimization expert. Optimize the delivery route starting from the warehouse.\n\n" +
+                        "WAREHOUSE LOCATION:\n" +
+                        "- Latitude: %.6f\n" +
+                        "- Longitude: %.6f\n\n" +
+                        "DELIVERIES TO OPTIMIZE:\n%s\n" +
+                        "TASK:\n" +
+                        "1. Calculate the optimal visiting order to minimize total distance\n" +
+                        "2. Start from the warehouse, visit all deliveries, and return to warehouse\n" +
+                        "3. Return ONLY the delivery IDs in optimal order, separated by commas\n\n" +
+                        "IMPORTANT: Respond with ONLY the delivery IDs in order, nothing else.\n" +
+                        "Example format: %s\n" +
+                        "Your response:",
+                warehouse.getLatitude(),
+                warehouse.getLongitude(),
+                deliveriesDesc.toString(),
+                deliveries.stream().map(d -> d.getId().toString()).collect(Collectors.joining(","))
+        );
 
         try {
+            System.out.println("\n=== AI OPTIMIZER - PROMPT ===");
+            System.out.println(promptText);
+
             String llmResponse = chatClient.prompt()
                     .user(promptText)
                     .call()
                     .content();
 
-            List<String> orderedIds = extractOrderedIdsFromJson(llmResponse);
+            System.out.println("\n=== AI OPTIMIZER - RESPONSE ===");
+            System.out.println(llmResponse);
 
-            return orderedIds.stream()
-                    .map(id -> deliveries.stream()
-                            .filter(d -> d.getId().equals(id))
-                            .findFirst()
-                            .orElse(null))
-                    .filter(d -> d != null)
-                    .collect(Collectors.toList());
+            List<Long> orderedIds = extractOrderedIdsFromResponse(llmResponse);
+
+            System.out.println("\n=== AI OPTIMIZER - EXTRACTED IDS ===");
+            System.out.println(orderedIds);
+
+            if (orderedIds.isEmpty()) {
+                System.err.println("Aucun ID extrait, retour à l'ordre original");
+                return deliveries;
+            }
+
+            // Reconstruire la liste dans l'ordre optimisé
+            List<Delivery> optimized = new ArrayList<>();
+            for (Long id : orderedIds) {
+                deliveries.stream()
+                        .filter(d -> d.getId().equals(id))
+                        .findFirst()
+                        .ifPresent(optimized::add);
+            }
+
+            // Ajouter les livraisons manquantes (au cas où)
+            for (Delivery d : deliveries) {
+                if (!optimized.contains(d)) {
+                    optimized.add(d);
+                }
+            }
+
+            System.out.println("\n=== AI OPTIMIZER - FINAL ORDER ===");
+            optimized.forEach(d -> System.out.println("Delivery " + d.getId()));
+
+            return optimized;
 
         } catch (Exception e) {
             System.err.println("Erreur lors de l'optimisation AI: " + e.getMessage());
+            e.printStackTrace();
             return deliveries;
         }
     }
 
-    private List<String> extractOrderedIdsFromJson(String json) {
+    private List<Long> extractOrderedIdsFromResponse(String response) {
+        List<Long> ids = new ArrayList<>();
+
         try {
-            String cleanJson = json.replaceAll("[\\[\\]\"]", "").trim();
-            if (cleanJson.isEmpty()) {
-                return List.of();
+            // Nettoyer la réponse
+            String cleaned = response
+                    .replaceAll("```json", "")
+                    .replaceAll("```", "")
+                    .replaceAll("[\\[\\]{}\"']", "")
+                    .replaceAll("orderedDeliveries:", "")
+                    .replaceAll("\\s+", "")
+                    .trim();
+
+            System.out.println("Cleaned response: " + cleaned);
+
+            // Extraire tous les nombres
+            Pattern pattern = Pattern.compile("\\d+");
+            Matcher matcher = pattern.matcher(cleaned);
+
+            while (matcher.find()) {
+                try {
+                    ids.add(Long.parseLong(matcher.group()));
+                } catch (NumberFormatException e) {
+                    // Ignorer les nombres invalides
+                }
             }
-            return List.of(cleanJson.split(","));
+
         } catch (Exception e) {
             System.err.println("Erreur lors de l'extraction des IDs: " + e.getMessage());
-            return List.of();
         }
+
+        return ids;
     }
 }

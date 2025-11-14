@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@ConditionalOnProperty(name = "optimizer.type", havingValue = "nearest", matchIfMissing = true)
+@ConditionalOnProperty(name = "optimizer.type", havingValue = "plus_proche_voisin", matchIfMissing = true)
 public class NearestNeighborOptimizer implements TourOptimizer {
 
     private double distance(double lat1, double lon1, double lat2, double lon2) {
