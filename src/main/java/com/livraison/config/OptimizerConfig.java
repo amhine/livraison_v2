@@ -79,11 +79,9 @@ public class OptimizerConfig {
     }
 
     @Bean("customAIOptimizer")
+    @ConditionalOnProperty(name = "optimizer.type", havingValue = "ai_optimizer")
     public AIOptimizer customAIOptimizer(ChatClient chatClient) {
-        if (chatClient == null) {
-            System.out.println("ChatClient non disponible, AIOptimizer non créé");
-            return null;
-        }
+        System.out.println("Création de l'AIOptimizer avec ChatClient");
         return new AIOptimizer(chatClient);
     }
 
