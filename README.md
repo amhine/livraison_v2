@@ -1,6 +1,6 @@
 
 
-# 🚚 Système de Gestion Optimisée des Tournées de Livraison
+# 🚚 Système de Gestion Optimisée des Tournées de Livraison V2
 
 ## 🎯 Présentation
 
@@ -179,7 +179,8 @@ L’application démarre par défaut sur :
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Swagger UI**          | <p align="center"><img width="1461" height="414" src="https://github.com/user-attachments/assets/ae024882-42cd-4322-9cf7-83fe177d1366" /><br><img width="1476" height="669" src="https://github.com/user-attachments/assets/6e708dfb-5f52-428c-abb6-4b6683134fc2" /><br><img width="1495" height="718" src="https://github.com/user-attachments/assets/181c6b95-55d8-4433-95fe-45473d1d4852" /><br><img width="1494" height="660" src="https://github.com/user-attachments/assets/c1adfd81-6dcc-4c79-8dfb-eefafabab67a" /></p> |
 | **Tests Postman**       | <p align="center"><img width="497" height="534" src="https://github.com/user-attachments/assets/2a0de1b5-7c01-490f-8b8f-8d3a09e7c96f" /></p>                                                                                                                                                                                                                                                                                                                                                                                   |
-| **Structure du projet** |  <p align="center"><img width="530" height="889" src="https://github.com/user-attachments/assets/42272256-e339-4a2b-984a-6ec800ef119f" /></p>                                                                                                                                                                                                                                      |
+| **Structure du projet** |  <p align="center"><img width="617" height="671" alt="image" src="https://github.com/user-attachments/assets/912f61e8-0de4-4f00-a310-e6bb87639dcf" />
+</p>                                                                                                                                                                                                                                      |
 | **Schéma UML**          | <img width="904" height="592" alt="Capture d’écran du 2025-11-14 10-03-11" src="https://github.com/user-attachments/assets/6f471880-75cf-43d2-902d-d50960e2a25b" />
 
 
